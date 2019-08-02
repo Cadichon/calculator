@@ -1,26 +1,76 @@
-function addToInput(character) {
-    var input = document.getElementsByClassName('input')[0];
-    input.children[0].value += character;
-}
-function clearInput() {
-    var input = document.getElementsByClassName('input')[0];
-    input.children[0].value = "";       
-}
-function calcInput() {
-    var input = document.getElementsByClassName('input')[0];
-    input.children[0].value = eval(input.children[0].value);
-}
-window.onload = function() {
-    var numbers = document.getElementsByClassName("number");
-    for (var i = numbers.length - 1; i >= 0; i--) {
-        numbers[i].children[0].setAttribute("onclick", "addToInput('"+ numbers[i].children[0].innerHTML+"');")
+(function ($) {
+    $.fn.calculator = function () {
+        var id = Math.floor(Math.random() * 1000);
+        this.replaceWith("<table id='" + id + "' class='calculator'>");
+        var that = $("#" + id);
+        var addToInput = function (input, toAdd) {
+            var content = input.val() + toAdd;
+            input.val(content);
+        };
+        var evalInput = function (input) {
+            var content = input.val();
+            input.val(eval(content));
+        };
+        var clearInput = function (input) {
+            input.val("");
+        }
+        that.removeAttr("id");
+        $.getJSON("data.json", function (data) {
+            var idx = 0;
+            var firstRow = $("<tr>");
+            var inputTd = $("<td>");
+            var clearTd = $("<td>");
+            var input = $("<input>");
+            var clearButton = $("<button>cl</button>");
+            clearButton.click(function (e) {
+                clearInput(input);
+            })
+            inputTd.attr("colspan", "3");
+            input.addClass("input");
+            input.prop("disabled", true);
+            inputTd.append(input);
+            clearTd.append(clearButton);
+            firstRow.append(inputTd);
+            firstRow.append(clearTd);
+
+            that.append(firstRow);
+            for (var i = 0; i < 4; i += 1) {
+                var row = $("<tr>");
+
+                for (var j = 0; j < 4; j += 1) {
+                    var td = $("<td>");
+                    var button = $("<button>");
+                    button.addClass(data[idx]["class"]);
+                    button.html(data[idx]["html"]);
+                    if (button.hasClass("number"))
+                        button.click(function (e) {
+                            addToInput(input, e.target.innerHTML);
+                        });
+                    else {
+                        switch (button.html()) {
+                            case "=":
+                            button.click(function (e) {
+                                evalInput(input);
+                            })
+                            break;
+                            default:
+                            button.click(function (e) {
+                                addToInput(input, e.target.innerHTML);
+                            });
+                            break;
+                        }
+                    }
+                    idx++;
+                    td.append(button);
+                    row.append(td);
+                }
+                that.append(row);
+            }
+        });
+        return that;
     }
-    var operators = document.getElementsByClassName("operator");
-    for (var i = operators.length - 1; i >= 0; i--) {
-        operators[i].children[0].setAttribute("onclick", "addToInput('"+ operators[i].children[0].innerHTML+"');")
-    }
-    var clear = document.getElementsByClassName("clear")[0];
-    clear.children[0].setAttribute("onclick", "clearInput();")
-    var equal = document.getElementsByClassName("equal")[0];
-    equal.children[0].setAttribute("onclick", "calcInput();")
-}
+
+    $(function () {
+        $(".calculator").calculator();
+    });
+}(jQuery));
