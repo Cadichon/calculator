@@ -1,0 +1,66 @@
+[
+    {
+        "class": "number",
+        "html": "1"
+    },
+    {
+        "class": "number",
+        "html": "2"
+    },
+    {
+        "class": "number",
+        "html": "3"
+    },
+    {
+        "class": "operator",
+        "html": "+"
+    },
+    {
+        "class": "number",
+        "html": "4"
+    },
+    {
+        "class": "number",
+        "html": "5"
+    },
+    {
+        "class": "number",
+        "html": "6"
+    },
+    {
+        "class": "operator",
+        "html": "-"
+    },
+    {
+        "class": "number",
+        "html": "7"
+    },
+    {
+        "class": "number",
+        "html": "8"
+    },
+    {
+        "class": "number",
+        "html": "9"
+    },
+    {
+        "class": "operator",
+        "html": "*"
+    },
+    {
+        "class": "operator",
+        "html": "."
+    },
+    {
+        "class": "number",
+        "html": "0"
+    },
+    {
+        "class": "operator",
+        "html": "="
+    },
+    {
+        "class": "operator",
+        "html": "/"
+    }
+]
