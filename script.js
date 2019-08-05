@@ -6,19 +6,42 @@
             var content = input.val() + toAdd;
             input.val(content);
         };
-        var evalInput = function (input) {
+        var updateOutput = function (output) {
+            $.ajax({
+                url: "api/",
+                method: "get",
+                dataType: "json",
+                success: function (data) {
+                    output.empty();
+                    for (var i = 0; i < data.length; i += 1) {
+                        var option = $("<option value=result-" + i + ">" + data[i].calcul + " = " + data[i].result + "</option>");
+                        if (i + 1 == data.length) {
+                            option.prop("selected", true);
+                        }
+                        output.append(option);
+                    }
+                }
+            });
+        }
+        var evalInput = function (input, output) {
             var content = input.val();
-            input.val(eval(content));
+            if (content.length == 0)
+                return;
+            input.val("");
+            $.ajax({
+                url: "api/",
+                method: "post",
+                data: {
+                    "calcul": content,
+                    "result": eval(content)
+                }
+            });
+            updateOutput(output);
         };
         var clearInput = function (input) {
             input.val("");
-        }
-
-        this.replaceWith("<table id='" + id + "' class='calculator'>");
-        that = $("#" + id);
-        that.removeAttr("id");
-        $.getJSON("data.json", function (data) {
-            var idx = 0;
+        };
+        var createFirstRow = function () {
             var firstRow = $("<tr>");
             var inputTd = $("<td>");
             var clearTd = $("<td>");
@@ -35,8 +58,31 @@
             clearTd.append(clearButton);
             firstRow.append(inputTd);
             firstRow.append(clearTd);
+            return [firstRow, input];
+        };
+        var createSecondRow = function () {
+            var secondRow = $("<tr>");
+            var outputTd = $("<td>");
+            var output = $("<select name='result'>");
 
+            outputTd.attr("colspan", "4");
+            output.addClass("output");
+            outputTd.append(output);
+            secondRow.append(outputTd);;
+            return [secondRow, output];
+        }
+
+        this.replaceWith("<table id='" + id + "' class='calculator'>");
+        that = $("#" + id);
+        that.removeAttr("id");
+        $.getJSON("data.json", function (data) {
+            var idx = 0;
+            var [firstRow, input] = createFirstRow();
+            var [secondRow, output] = createSecondRow();
+
+            updateOutput(output);
             that.append(firstRow);
+            that.append(secondRow);
             for (var i = 0; i < 4; i += 1) {
                 var row = $("<tr>");
 
@@ -54,7 +100,7 @@
                         switch (button.html()) {
                             case "=":
                             button.click(function (e) {
-                                evalInput(input);
+                                evalInput(input, output);
                             })
                             break;
                             default:
